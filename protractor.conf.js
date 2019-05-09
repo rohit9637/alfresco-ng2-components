@@ -173,6 +173,13 @@ saveReport = async function (filenameReport, alfrescoJsApi) {
     }
 };
 
+const appConfig = {
+    "rootPath": __dirname,
+    "oauth2": {
+        "clientId" : "activiti"
+    }
+};
+
 
 exports.config = {
     allScriptsTimeout: TIMEOUT,
@@ -182,7 +189,7 @@ exports.config = {
     ],
 
     useAllAngular2AppRoots: true,
-
+   
     capabilities: {
         browserName: 'chrome',
 

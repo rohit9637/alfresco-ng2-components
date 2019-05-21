@@ -35,6 +35,7 @@ import { FormCloud } from '../models/form-cloud.model';
 import { TaskVariableCloud } from '../models/task-variable-cloud.model';
 import { DropdownCloudWidgetComponent } from './dropdown-cloud/dropdown-cloud.widget';
 import { UploadCloudWidgetComponent } from './upload-cloud.widget';
+import { FormCloudRepresentation } from '../models/form-cloud-representation.model';
 
 @Component({
     selector: 'adf-cloud-form',
@@ -83,7 +84,7 @@ export class FormCloudComponent extends FormBaseComponent implements OnChanges, 
 
     protected subscriptions: Subscription[] = [];
     nodeId: string;
-    formRepresentation: any;
+    formRepresentation: FormCloudRepresentation;
 
     protected onDestroy$ = new Subject<boolean>();
 
@@ -173,7 +174,7 @@ export class FormCloudComponent extends FormBaseComponent implements OnChanges, 
                     .subscribe(
                         (data) => {
                             this.data = data[1];
-                            this.formRepresentation = data[0];
+                            this.formRepresentation = new FormCloudRepresentation(data[0]);
                             const parsedForm = this.parseForm(this.formRepresentation);
                             this.visibilityService.refreshVisibility(<any> parsedForm);
                             parsedForm.validateForm();

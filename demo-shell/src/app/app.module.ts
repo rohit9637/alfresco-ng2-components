@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ChartsModule } from 'ng2-charts';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppConfigService, TRANSLATION_PROVIDER, DebugAppConfigService, CoreModule, CoreAutomationService } from '@alfresco/adf-core';
 import { ExtensionsModule } from '@alfresco/adf-extensions';
@@ -91,11 +91,12 @@ import { CommunityStartTaskCloudDemoComponent } from './components/cloud/communi
 import { CommunityProcessDetailsCloudDemoComponent } from './components/cloud/community/community-process-details-cloud.component';
 import { CommunityProcessesCloudDemoComponent } from './components/cloud/community/community-processes-cloud.component';
 import { CommunityTaskDetailsCloudDemoComponent } from './components/cloud/community/community-task-details-cloud.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
     imports: [
         BrowserModule,
-        BrowserAnimationsModule,
+        environment.e2e ? NoopAnimationsModule : BrowserAnimationsModule,
         ReactiveFormsModule,
         routing,
         FormsModule,

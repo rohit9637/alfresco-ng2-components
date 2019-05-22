@@ -16,5 +16,5 @@ else
     ./scripts/smart-build.sh -b $TRAVIS_BRANCH  -gnu || exit 1;
 fi;
 
-npm run build:dist || exit 1;
+npm run build:dist:e2e || exit 1;
 npm run license-checker

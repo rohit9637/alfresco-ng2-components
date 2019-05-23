@@ -518,9 +518,9 @@ exports.ACTIVITI7_APPS = {
         name: "candidateuserapp",
         file_location: "/resources/activiti7/candidateuserapp.zip",
         processes: {
-            candidateGroupProcess: "candidateGroupTask",
-            candidateUserProcess: "candidateUserTask",
-            assigneeProcess: "assignedTask"
+            candidateGroupProcess: "taskCandidateGroup",
+            candidateUserProcess: "taskCandidateUser",
+            assigneeProcess: "taskAssignee"
         }
     },
     SIMPLE_APP: {

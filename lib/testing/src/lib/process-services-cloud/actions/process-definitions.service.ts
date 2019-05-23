@@ -47,7 +47,7 @@ export class ProcessDefinitionsService {
 
     async getProcessDefinitionByName(processDefinitionName, appName) {
         const processDefinitions = await this.getProcessDefinitions(appName);
-        return processDefinitions.list.entries.filter((el) => {
+        return processDefinitions.list.entries.find((el) => {
             if (el.entry.name === processDefinitionName) {
                 return el;
             }});

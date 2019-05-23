@@ -196,10 +196,6 @@ export class LoginPage {
         return this.login(username, password);
     }
 
-    async removeECMTicketFromStorage() {
-        await LocalStorageUtil.removeStorageItem('ticket-ECM');
-    }
-
     clickSignInButton() {
         BrowserActions.clickExecuteScript('#login-button');
     }

@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-import { LoginPage } from '@alfresco/adf-testing';
+import { LoginPage, Widget } from '@alfresco/adf-testing';
 import { ProcessFiltersPage } from '../pages/adf/process-services/processFiltersPage';
-import { Widget } from '../pages/adf/process-services/widgets/widget';
 import { StartProcessPage } from '../pages/adf/process-services/startProcessPage';
 import { ProcessDetailsPage } from '../pages/adf/process-services/processDetailsPage';
 import { TaskDetailsPage } from '../pages/adf/process-services/taskDetailsPage';
 import { ProcessServiceTabBarPage } from '../pages/adf/process-services/processServiceTabBarPage';
 import { NavigationBarPage } from '../pages/adf/navigationBarPage';
 
-import TestConfig = require('../test.config');
 import resources = require('../util/resources');
 
 import { AlfrescoApiCompatibility as AlfrescoApi } from '@alfresco/js-api';
@@ -52,10 +50,10 @@ describe('Form widgets - People', () => {
 
         alfrescoJsApi = new AlfrescoApi({
             provider: 'BPM',
-            hostBpm: TestConfig.adf.url
+            hostBpm: browser.params.testConfig.adf.url
         });
 
-        await alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+        await alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
 
         processUserModel = await users.createTenantAndUser(alfrescoJsApi);
 
@@ -70,7 +68,7 @@ describe('Form widgets - People', () => {
 
     afterAll(async (done) => {
 
-        await alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+        await alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
 
         await alfrescoJsApi.activiti.adminTenantsApi.deleteTenant(processUserModel.tenantId);
 

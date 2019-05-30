@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR/../"
 BROWSER_RUN=false
 DEVELOPMENT=false
-EXECLINT=true
+EXECLINT=false
 LITESERVER=false
 EXEC_VERSION_JSAPI=false
 TIMEOUT=15000
@@ -14,6 +14,7 @@ DEBUG=false
 show_help() {
     echo "Usage: ./scripts/test-e2e-lib.sh -host adf.domain.com -u admin -p admin -e admin"
     echo ""
+    echo "--env"
     echo "-u or --username"
     echo "-p or --password"
     echo "-e or --email"
@@ -29,7 +30,7 @@ show_help() {
     echo "-host_sso the entire path including the name of the realm"
     echo "-save  save the error screenshot in the remote env"
     echo "-timeout or --timeout override the timeout foe the wait utils"
-    echo "-sl --skip-lint skip lint"
+    echo "-l --lint enable lint"
     echo "-m --maxInstances max instances parallel for tests"
     echo "-disable-control-flow disable control flow"
     echo "-db or --debug run the debugger"
@@ -39,41 +40,50 @@ show_help() {
 
 set_username(){
     USERNAME=$1
+    export USERNAME_ADF=$USERNAME
 }
 set_password(){
     PASSWORD=$1
+    export PASSWORD_ADF=$PASSWORD
 }
 set_email(){
     EMAIL=$1
+    export EMAIL_ADF=$EMAIL
 }
 set_host(){
     HOST=$1
+    export URL_HOST_ADF=$HOST
 }
 
 set_host_bpm(){
     HOST_BPM=$1
+    export URL_HOST_BPM_ADF=$HOST_BPM
 }
 
 set_host_sso(){
     HOST_SSO=$1
+    export URL_HOST_SSO_ADF=$HOST_SSO
 }
 
 set_host_identity(){
     HOST_IDENTITY=$1
+    export URL_HOST_IDENTITY=$HOST_IDENTITY
 }
 
-set_test(){
-    SINGLE_TEST=true
-    NAME_TEST=$1
+set_specs(){
+    LIST_SPECS=$1
+    export LIST_SPECS=$LIST_SPECS
 }
 
 set_browser(){
     echo "====== BROWSER RUN ====="
     BROWSER_RUN=true
+    export BROWSER_RUN=$BROWSER_RUN
 }
 
 set_proxy(){
     PROXY=$1
+    export PROXY_HOST_ADF=$PROXY
 }
 
 set_timeout(){
@@ -90,18 +100,23 @@ set_development(){
 
 set_test_folder(){
     FOLDER=$1
+    export FOLDER=$FOLDER
 }
 
 set_selenium(){
     SELENIUM_SERVER=$1
 }
 
-skip_lint(){
-    EXECLINT=false
+set_env(){
+    export ENV_FILE=$1
+}
+
+lint(){
+    EXECLINT=true
 }
 
 debug(){
-    DEBUG=true
+    export DEBUG=true;
 }
 
 lite_server(){
@@ -138,18 +153,19 @@ while [[ $1 == -* ]]; do
       -f|--folder)  set_test_folder $2; shift 2;;
       -timeout|--timeout)  set_timeout $2; shift 2;;
       -b|--browser)  set_browser; shift;;
+      -env|--env)   set_env $2; shift 2;;
       -dev|--dev)  set_development; shift;;
-      -s|--spec)  set_test $2; shift 2;;
+      -s|--specs)  set_specs $2; shift 2;;
+      -db|--debug) debug; shift;;
       -ud|--use-dist)  lite_server; shift;;
       -save)   set_save_screenshot; shift;;
       -proxy|--proxy)  set_proxy $2; shift 2;;
       -s|--seleniumServer) set_selenium $2; shift 2;;
-      -db|--debug) debug; shift;;
       -host|--host)  set_host $2; shift 2;;
       -host_bpm|--host_bpm) set_host_bpm $2; shift 2;;
       -host_sso|--host_sso) set_host_sso $2; shift 2;;
       -host_identity|--host_identity) set_host_identity $2; shift 2;;
-      -sl|--skip-lint)  skip_lint; shift;;
+      -l|--lint)  lint; shift;;
       -m|--maxInstances)  max_instances $2; shift 2;;
       -vjsapi)  version_js_api $2; shift 2;;
       -disable-control-flow|--disable-control-flow)  disable_control_flow; shift;;
@@ -160,23 +176,13 @@ done
 rm -rf ./e2e/downloads/
 rm -rf ./e2e-output/screenshots/
 
-export URL_HOST_BPM_ADF=$HOST_BPM
-export URL_HOST_SSO_ADF=$HOST_SSO
-export URL_HOST_IDENTITY=$HOST_IDENTITY
-export URL_HOST_ADF=$HOST
-export USERNAME_ADF=$USERNAME
-export PASSWORD_ADF=$PASSWORD
-export EMAIL_ADF=$EMAIL
-export BROWSER_RUN=$BROWSER_RUN
-export PROXY_HOST_ADF=$PROXY
 export SAVE_SCREENSHOT=$SAVE_SCREENSHOT
 export TIMEOUT=$TIMEOUT
-export FOLDER=$FOLDER'/'
+
 export SELENIUM_SERVER=$SELENIUM_SERVER
-export NAME_TEST=$NAME_TEST
+
 export MAXINSTANCES=$MAXINSTANCES
 export SELENIUM_PROMISE_MANAGER=$SELENIUM_PROMISE_MANAGER
-
 
 if $EXEC_VERSION_JSAPI == true; then
   echo "====== Use the alfresco JS-API '$JSAPI_VERSION'====="
@@ -197,13 +203,13 @@ else
     if [[  $LITESERVER == "true" ]]; then
         echo "====== Run dist in lite-server ====="
         ls demo-shell/dist
-        npm run lite-server-e2e>/dev/null & ./node_modules/protractor/bin/protractor protractor.conf.js || exit 1
-    else
-         if [[  $DEBUG == "true" ]]; then
+        npm run lite-server-e2e>/dev/null & ./node_modules/protractor/bin/protractor protractor.conf.ts || exit 1
+     else
+        if [[  $DEBUG == "true" ]]; then
             echo "====== DEBUG ====="
-            node --inspect-brk ./node_modules/protractor/bin/protractor protractor.conf.js || exit 1
+            node --inspect-brk ./node_modules/protractor/bin/protractor protractor.conf.ts || exit 1
         else
-            ./node_modules/protractor/bin/protractor protractor.conf.js || exit 1
+            ./node_modules/protractor/bin/protractor protractor.conf.ts || exit 1
         fi
     fi
 fi

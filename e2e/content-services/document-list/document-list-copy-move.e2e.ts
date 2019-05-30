@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-import { by, element } from 'protractor';
+import { by, element, browser } from 'protractor';
 import { LoginPage, PaginationPage } from '@alfresco/adf-testing';
 import { ContentServicesPage } from '../../pages/adf/contentServicesPage';
 import { AcsUserModel } from '../../models/ACS/acsUserModel';
-import TestConfig = require('../../test.config');
 import { AlfrescoApiCompatibility as AlfrescoApi } from '@alfresco/js-api';
 import { UploadActions } from '../../actions/ACS/upload.actions';
 import { StringUtil } from '@alfresco/adf-testing';
@@ -43,7 +42,7 @@ describe('Document List Component - Actions', () => {
 
     const alfrescoJsApi = new AlfrescoApi({
         provider: 'ECM',
-        hostEcm: TestConfig.adf.url
+        hostEcm: browser.params.testConfig.adf.url
     });
 
     describe('Folder Actions - Copy and Move', () => {
@@ -62,7 +61,7 @@ describe('Document List Component - Actions', () => {
 
         beforeAll(async (done) => {
 
-            await alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+            await alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
             await alfrescoJsApi.core.peopleApi.addPerson(contentServicesUser);
             await alfrescoJsApi.login(contentServicesUser.id, contentServicesUser.password);
             folder1 = await uploadActions.createFolder(alfrescoJsApi, 'A' + folderModel1.name, '-my-');
@@ -72,28 +71,26 @@ describe('Document List Component - Actions', () => {
             folder5 = await uploadActions.createFolder(alfrescoJsApi, 'E' + folderModel5.name, '-my-');
             folder6 = await uploadActions.createFolder(alfrescoJsApi, 'F' + folderModel6.name, '-my-');
             folders = [folder1, folder2, folder3, folder4, folder5, folder6];
-            done();
-        });
 
-        beforeEach(async (done) => {
             await loginPage.loginToContentServicesUsingUserModel(contentServicesUser);
             contentServicesPage.goToDocumentList();
             contentServicesPage.waitForTableBody();
             paginationPage.selectItemsPerPage('5');
             contentServicesPage.checkAcsContainer();
             contentListPage.waitForTableBody();
+
             done();
         });
 
         afterAll(async (done) => {
-            await alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+            await alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
             await folders.forEach(function (folder) {
                 uploadActions.deleteFilesOrFolder(alfrescoJsApi, folder.entry.id);
             });
             done();
         });
 
-        xit('[C260132] Move action on folder with - Load more', () => {
+        it('[C260132] Move action on folder with - Load more', () => {
 
             expect(paginationPage.getCurrentItemsPerPage()).toEqual('5');
             expect(paginationPage.getPaginationRange()).toEqual('Showing 1-' + 5 + ' of ' + 6);

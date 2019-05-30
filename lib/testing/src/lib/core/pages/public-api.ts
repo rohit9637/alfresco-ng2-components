@@ -25,3 +25,5 @@ export * from './data-table-component.page';
 export * from './pagination.page';
 export * from './error.page';
 export * from './login.page';
+
+export * from './form/public-api';

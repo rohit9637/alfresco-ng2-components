@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-import TestConfig = require('../../test.config');
 import { CreateFolderDialog } from './dialog/createFolderDialog';
 import { CreateLibraryDialog } from './dialog/createLibraryDialog';
 import { FormControllersPage } from '@alfresco/adf-testing';
@@ -44,7 +43,7 @@ export class ContentServicesPage {
     createLibraryDialog = new CreateLibraryDialog();
     dragAndDropAction = new DropActions();
     uploadBorder = element(by.id('document-list-container'));
-    contentServices = element(by.css('a[data-automation-id="Content Services"]'));
+    contentServices = element(by.css('.adf-sidenav-link[data-automation-id="Content Services"]'));
     currentFolder = element(by.css('div[class*="adf-breadcrumb-item adf-active"] div'));
     createFolderButton = element(by.css('button[data-automation-id="create-new-folder"]'));
     createLibraryButton = element(by.css('button[data-automation-id="create-new-library"]'));
@@ -433,16 +432,16 @@ export class ContentServicesPage {
     uploadFile(fileLocation) {
         this.checkUploadButton();
         BrowserVisibility.waitUntilElementIsVisible(this.uploadFileButton);
-        this.uploadFileButton.sendKeys(path.resolve(path.join(TestConfig.main.rootPath, fileLocation)));
+        this.uploadFileButton.sendKeys(path.resolve(path.join(browser.params.testConfig.main.rootPath, fileLocation)));
         this.checkUploadButton();
         return this;
     }
 
     uploadMultipleFile(files) {
         BrowserVisibility.waitUntilElementIsVisible(this.uploadMultipleFileButton);
-        let allFiles = path.resolve(path.join(TestConfig.main.rootPath, files[0]));
+        let allFiles = path.resolve(path.join(browser.params.testConfig.main.rootPath, files[0]));
         for (let i = 1; i < files.length; i++) {
-            allFiles = allFiles + '\n' + path.resolve(path.join(TestConfig.main.rootPath, files[i]));
+            allFiles = allFiles + '\n' + path.resolve(path.join(browser.params.testConfig.main.rootPath, files[i]));
         }
         this.uploadMultipleFileButton.sendKeys(allFiles);
         BrowserVisibility.waitUntilElementIsVisible(this.uploadMultipleFileButton);
@@ -451,7 +450,7 @@ export class ContentServicesPage {
 
     uploadFolder(folder) {
         BrowserVisibility.waitUntilElementIsVisible(this.uploadFolderButton);
-        this.uploadFolderButton.sendKeys(path.resolve(path.join(TestConfig.main.rootPath, folder)));
+        this.uploadFolderButton.sendKeys(path.resolve(path.join(browser.params.testConfig.main.rootPath, folder)));
         BrowserVisibility.waitUntilElementIsVisible(this.uploadFolderButton);
         return this;
     }

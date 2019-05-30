@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-import TestConfig = require('../test.config');
-
-import { SettingsPage } from '@alfresco/adf-testing';
 import { NavigationBarPage } from '../pages/adf/navigationBarPage';
 import { PeopleGroupCloudComponentPage } from '../pages/adf/demo-shell/process-services/peopleGroupCloudComponentPage';
-import { GroupCloudComponentPage, PeopleCloudComponentPage } from '@alfresco/adf-testing';
+import { GroupCloudComponentPage, PeopleCloudComponentPage, SettingsPage } from '@alfresco/adf-testing';
 import { browser } from 'protractor';
 import { LoginSSOPage, IdentityService, GroupIdentityService, RolesService, ApiService } from '@alfresco/adf-testing';
 import CONSTANTS = require('../util/constants');
 import resources = require('../util/resources');
 
-describe('People Groups Cloud Component', () => {
+xdescribe('People Groups Cloud Component', () => {
 
     describe('People Groups Cloud Component', () => {
-        const settingsPage = new SettingsPage();
         const loginSSOPage = new LoginSSOPage();
         const navigationBarPage = new NavigationBarPage();
         const peopleGroupCloudComponentPage = new PeopleGroupCloudComponentPage();
@@ -38,6 +34,7 @@ describe('People Groups Cloud Component', () => {
         let identityService: IdentityService;
         let groupIdentityService: GroupIdentityService;
         let rolesService: RolesService;
+        const settingsPage = new SettingsPage();
 
         let apsUser;
         let activitiUser;
@@ -55,9 +52,12 @@ describe('People Groups Cloud Component', () => {
         let clientId;
 
         beforeAll(async (done) => {
+            const apiService = new ApiService(
+                browser.params.config.oauth2.clientId,
+                browser.params.config.bpmHost, browser.params.config.oauth2.host, browser.params.config.providers
+            );
+            await apiService.login(browser.params.identityAdmin.email, browser.params.identityAdmin.password);
 
-            const apiService = new ApiService('activiti', TestConfig.adf.hostBPM, TestConfig.adf.hostSso, 'BPM');
-            await apiService.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
             identityService = new IdentityService(apiService);
             rolesService = new RolesService(apiService);
             groupIdentityService = new GroupIdentityService(apiService);
@@ -87,23 +87,27 @@ describe('People Groups Cloud Component', () => {
             await groupIdentityService.addClientRole(groupActiviti.id, clientId, clientActivitiAdminRoleId, CONSTANTS.ROLES.ACTIVITI_ADMIN);
             users = [`${apsUser.idIdentityService}`, `${activitiUser.idIdentityService}`, `${noRoleUser.idIdentityService}`];
             groups = [`${groupAps.id}`, `${groupActiviti.id}`, `${groupNoRole.id}`];
-            settingsPage.setProviderBpmSso(TestConfig.adf.hostBPM, TestConfig.adf.hostSso, TestConfig.adf.hostIdentity, false);
-            loginSSOPage.clickOnSSOButton();
-            loginSSOPage.loginSSOIdentityService(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
-            navigationBarPage.navigateToPeopleGroupCloudPage();
+
+            await settingsPage.setProviderBpmSso(
+                browser.params.config.bpmHost,
+                browser.params.config.oauth2.host,
+                browser.params.config.identityHost);
+            loginSSOPage.loginSSOIdentityService(browser.params.identityUser.email, browser.params.identityUser.password);
             done();
         });
 
-        afterAll(async () => {
+        afterAll(async (done) => {
             for (let i = 0; i < users.length; i++) {
                 await identityService.deleteIdentityUser(users[i]);
             }
             for (let i = 0; i < groups.length; i++) {
                 await groupIdentityService.deleteIdentityGroup(groups[i]);
             }
+            done();
         });
 
         beforeEach(() => {
+            navigationBarPage.navigateToPeopleGroupCloudPage();
             peopleGroupCloudComponentPage.checkGroupsCloudComponentTitleIsDisplayed();
             peopleGroupCloudComponentPage.checkPeopleCloudComponentTitleIsDisplayed();
         });

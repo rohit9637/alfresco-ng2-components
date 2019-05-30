@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-import { FormFields } from '../formFields';
-import { by, element } from 'protractor';
-import { BrowserActions } from '@alfresco/adf-testing';
+import { browser } from 'protractor';
 
-export class HyperlinkWidget {
+export class FormUtil {
 
-    formFields = new FormFields();
-
-    fieldLocator = by.css('div[class="adf-hyperlink-widget "] a');
-
-    getFieldText(fieldId) {
-        return this.formFields.getFieldText(fieldId, this.fieldLocator);
+    static async setForm(value: string) {
+        await browser.executeScript(
+            'window.adf.setFormInEditor(`' + value + '`);'
+        );
     }
 
-    getFieldLabel(fieldId) {
-        const label = element.all(by.css(`adf-form-field div[id="field-${fieldId}-container"] label`)).first();
-        return BrowserActions.getText(label);
+    static async setCloudForm(value: string) {
+        await browser.executeScript(
+            'window.adf.setCloudFormInEditor(`' + value + '`);'
+        );
     }
 }

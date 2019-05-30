@@ -18,33 +18,33 @@
 import { browser, by, element, ElementFinder } from 'protractor';
 import { ProcessServicesPage } from './process-services/processServicesPage';
 import { AppListCloudPage } from '@alfresco/adf-testing';
-import TestConfig = require('../../test.config');
 import { PeopleGroupCloudComponentPage } from './demo-shell/process-services/peopleGroupCloudComponentPage';
 import { BrowserVisibility, BrowserActions } from '@alfresco/adf-testing';
 
 export class NavigationBarPage {
 
     linkListContainer = element(by.css('.adf-sidenav-linklist'));
-    dataTableNestedButton = element(by.css('button[data-automation-id="Datatable"]'));
-    dataTableCopyContentButton = element(by.css('button[data-automation-id="Copy Content"]'));
-    dataTableDragAndDropButton = element(by.css('button[data-automation-id="Drag and Drop"]'));
-    processServicesButton = element(by.css('a[data-automation-id="Process Services"]'));
-    processServicesNestedButton = element(by.css('button[data-automation-id="App"]'));
-    processServicesCloudHomeButton = element(by.css('button[data-automation-id="Home"]'));
-    loginButton = element(by.css('a[data-automation-id="Login"]'));
-    overlayViewerButton = element(by.css('a[data-automation-id="Overlay Viewer"]'));
+    linkMenuChildrenContainer = element(by.css('.nestedMenu'));
+    dataTableNestedButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="Datatable"]'));
+    dataTableCopyContentButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="Copy Content"]'));
+    dataTableDragAndDropButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="Drag and Drop"]'));
+    processServicesButton = element(by.css('.adf-sidenav-link[data-automation-id="Process Services"]'));
+    processServicesNestedButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="App"]'));
+    processServicesCloudHomeButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="Home"]'));
+    loginButton = element(by.css('.adf-sidenav-link[data-automation-id="Login"]'));
+    overlayViewerButton = element(by.css('.adf-sidenav-link[data-automation-id="Overlay Viewer"]'));
     themeButton = element(by.css('button[data-automation-id="theme menu"]'));
     themeMenuContent = element(by.css('div[class*="mat-menu-panel"]'));
-    logoutButton = element(by.css('a[adf-logout]'));
-    cardViewButton = element(by.cssContainingText('.adf-sidenav-menu-label', 'CardView'));
+    logoutButton = element(by.css('.adf-sidenav-link[adf-logout]'));
+    cardViewButton = element(by.css('.adf-sidenav-link[data-automation-id="CardView"]'));
     languageMenuButton = element(by.css('button[data-automation-id="language-menu-button"]'));
     appTitle = element(by.css('.adf-app-title'));
     menuButton = element(by.css('button[data-automation-id="adf-menu-icon"]'));
-    formButton = element(by.css('button[data-automation-id="Form"]'));
-    peopleGroupCloudButton = element(by.css('button[data-automation-id="People/Group Cloud"]'));
+    formButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="Form"]'));
+    peopleGroupCloudButton = this.linkMenuChildrenContainer.element(by.css('.adf-sidenav-link[data-automation-id="People/Group Cloud"]'));
 
     clickMenuButton(title) {
-        BrowserActions.clickExecuteScript(`a[data-automation-id="${title}"]`);
+        BrowserActions.clickExecuteScript(`.adf-sidenav-link[data-automation-id="${title}"]`);
     }
 
     async clickTagButton() {
@@ -140,7 +140,7 @@ export class NavigationBarPage {
     }
 
     openContentServicesFolder(folderId) {
-        return BrowserActions.getUrl(TestConfig.adf.url + '/files/' + folderId);
+        return BrowserActions.getUrl(browser.params.testConfig.adf.url + '/files/' + folderId);
     }
 
     chooseLanguage(language) {
@@ -207,12 +207,12 @@ export class NavigationBarPage {
     }
 
     async openViewer(nodeId) {
-        await  BrowserActions.getUrl(TestConfig.adf.url + `/files(overlay:files/${nodeId}/view`);
+        await  BrowserActions.getUrl(browser.params.testConfig.adf.url + `/files(overlay:files/${nodeId}/view`);
         return this;
     }
 
     async goToSite(site) {
-        await BrowserActions.getUrl(TestConfig.adf.url + `/files/${site.entry.guid}/display/list`);
+        await BrowserActions.getUrl(browser.params.testConfig.adf.url + `/files/${site.entry.guid}/display/list`);
     }
 
     async scrollTo(el: ElementFinder) {

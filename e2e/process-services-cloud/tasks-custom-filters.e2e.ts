@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import TestConfig = require('../test.config');
+import { browser } from 'protractor';
 
 import {
     StringUtil,
@@ -36,11 +36,11 @@ import resources = require('../util/resources');
 describe('Task filters cloud', () => {
 
     describe('Filters', () => {
-        const settingsPage = new SettingsPage();
         const loginSSOPage = new LoginSSOPage();
         const navigationBarPage = new NavigationBarPage();
         const appListCloudComponent = new AppListCloudPage();
         const tasksCloudDemoPage = new TasksCloudDemoPage();
+        const settingsPage = new SettingsPage();
         let tasksService: TasksService;
         let processDefinitionService: ProcessDefinitionsService;
         let processInstancesService: ProcessInstancesService;
@@ -50,19 +50,17 @@ describe('Task filters cloud', () => {
             completedTaskName = StringUtil.generateRandomString(),
             assignedTaskName = StringUtil.generateRandomString(), deletedTaskName = StringUtil.generateRandomString();
         const simpleApp = resources.ACTIVITI7_APPS.SIMPLE_APP.name;
-        const user = TestConfig.adf.adminEmail, password = TestConfig.adf.adminPassword;
         let assignedTask, deletedTask, suspendedTasks;
         const orderByNameAndPriority = ['cCreatedTask', 'dCreatedTask', 'eCreatedTask'];
         let priority = 30;
         const nrOfTasks = 3;
 
         beforeAll(async (done) => {
-            settingsPage.setProviderBpmSso(TestConfig.adf.hostBPM, TestConfig.adf.hostSso, TestConfig.adf.hostIdentity, false);
-            loginSSOPage.clickOnSSOButton();
-            loginSSOPage.loginSSOIdentityService(user, password);
-
-            const apiService = new ApiService('activiti', TestConfig.adf.hostBPM, TestConfig.adf.hostSso, 'BPM');
-            await apiService.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+            const apiService = new ApiService(
+                browser.params.config.oauth2.clientId,
+                browser.params.config.bpmHost, browser.params.config.oauth2.host, browser.params.config.providers
+            );
+            await apiService.login(browser.params.identityUser.email, browser.params.identityUser.password);
 
             tasksService = new TasksService(apiService);
             await tasksService.createStandaloneTask(createdTaskName, simpleApp);
@@ -89,6 +87,12 @@ describe('Task filters cloud', () => {
             await processInstancesService.suspendProcessInstance(processInstance.entry.id, simpleApp);
             await processInstancesService.deleteProcessInstance(secondProcessInstance.entry.id, simpleApp);
             await queryService.getProcessInstanceTasks(processInstance.entry.id, simpleApp);
+
+            await settingsPage.setProviderBpmSso(
+                browser.params.config.bpmHost,
+                browser.params.config.oauth2.host,
+                browser.params.config.identityHost);
+            loginSSOPage.loginSSOIdentityService(browser.params.identityUser.email, browser.params.identityUser.password);
             done();
         });
 
@@ -120,7 +124,7 @@ describe('Task filters cloud', () => {
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsNotDisplayedByName(deletedTaskName);
         });
 
-        xit('[C290139] Should display only tasks with all statuses when All is selected from status dropdown', () => {
+        it('[C290139] Should display only tasks with all statuses when All is selected from status dropdown', () => {
             tasksCloudDemoPage.editTaskFilterCloudComponent().clickCustomiseFilterHeader().clearAssignee()
                 .setStatusFilterDropDown('ALL');
 
@@ -130,7 +134,7 @@ describe('Task filters cloud', () => {
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsDisplayedByName(completedTaskName);
         });
 
-        xit('[C290154] Should display only tasks with suspended statuses when Suspended is selected from status dropdown', () => {
+        it('[C290154] Should display only tasks with suspended statuses when Suspended is selected from status dropdown', () => {
             tasksCloudDemoPage.editTaskFilterCloudComponent().clickCustomiseFilterHeader().clearAssignee()
                 .setStatusFilterDropDown('SUSPENDED');
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsDisplayedById(suspendedTasks.list.entries[0].entry.id);
@@ -140,7 +144,7 @@ describe('Task filters cloud', () => {
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsNotDisplayedByName(assignedTaskName);
         });
 
-        xit('[C290060] Should display only tasks with Created status when Created is selected from status dropdown', () => {
+        it('[C290060] Should display only tasks with Created status when Created is selected from status dropdown', () => {
             tasksCloudDemoPage.editTaskFilterCloudComponent().clickCustomiseFilterHeader().clearAssignee().setStatusFilterDropDown('CREATED');
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsDisplayedByName(createdTaskName);
             tasksCloudDemoPage.taskListCloudComponent().checkContentIsNotDisplayedByName(assignedTaskName);

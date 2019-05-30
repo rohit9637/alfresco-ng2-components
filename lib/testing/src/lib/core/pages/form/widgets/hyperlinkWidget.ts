@@ -14,10 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DialogConfigService } from '../services/dialog-config.service';
 
-export function dialogConfigFactory(
-    dialogConfigService: DialogConfigService
-): Function {
-    return () => dialogConfigService.loadDefaults();
+import { FormFields } from '../formFields';
+import { by, element } from 'protractor';
+import { BrowserActions } from '../../../utils/public-api';
+
+export class HyperlinkWidget {
+
+    formFields = new FormFields();
+
+    fieldLocator = by.css('div[class="adf-hyperlink-widget "] a');
+
+    getFieldText(fieldId) {
+        return this.formFields.getFieldText(fieldId, this.fieldLocator);
+    }
+
+    getFieldLabel(fieldId) {
+        const label = element.all(by.css(`adf-form-field div[id="field-${fieldId}-container"] label`)).first();
+        return BrowserActions.getText(label);
+    }
 }

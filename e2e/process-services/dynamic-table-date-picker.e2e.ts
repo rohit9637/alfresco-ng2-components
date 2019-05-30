@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-import { LoginPage } from '@alfresco/adf-testing';
+import { LoginPage, Widget } from '@alfresco/adf-testing';
 import { ProcessFiltersPage } from '../pages/adf/process-services/processFiltersPage';
 import { ProcessServiceTabBarPage } from '../pages/adf/process-services/processServiceTabBarPage';
-import { DynamicTableWidget } from '../pages/adf/process-services/widgets/dynamicTableWidget';
-import { DropdownWidget } from '../pages/adf/process-services/widgets/dropdownWidget';
 import { DatePickerPage } from '../pages/adf/material/datePickerPage';
 import { NavigationBarPage } from '../pages/adf/navigationBarPage';
 
-import TestConfig = require('../test.config');
+import { browser } from 'protractor';
 import resources = require('../util/resources');
 
 import { AlfrescoApiCompatibility as AlfrescoApi } from '@alfresco/js-api';
@@ -35,21 +33,21 @@ describe('Dynamic Table', () => {
     const loginPage = new LoginPage();
     const processFiltersPage = new ProcessFiltersPage();
     const processServiceTabBarPage = new ProcessServiceTabBarPage();
-    const dynamicTable = new DynamicTableWidget();
     const datePicker = new DatePickerPage();
     const navigationBarPage = new NavigationBarPage();
+    const widget = new Widget();
     let user, tenantId, appId, apps, users;
 
     beforeAll(async(done) => {
         this.alfrescoJsApi = new AlfrescoApi({
             provider: 'BPM',
-            hostBpm: TestConfig.adf.url
+            hostBpm: browser.params.testConfig.adf.url
         });
 
         apps = new AppsActions();
         users = new UsersActions();
 
-        await this.alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+        await this.alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
 
         user = await users.createTenantAndUser(this.alfrescoJsApi);
 
@@ -59,7 +57,7 @@ describe('Dynamic Table', () => {
     });
 
     afterAll(async(done) => {
-        await this.alfrescoJsApi.login(TestConfig.adf.adminEmail, TestConfig.adf.adminPassword);
+        await this.alfrescoJsApi.login(browser.params.testConfig.adf.adminEmail, browser.params.testConfig.adf.adminPassword);
 
         await this.alfrescoJsApi.activiti.adminTenantsApi.deleteTenant(tenantId);
 
@@ -106,30 +104,30 @@ describe('Dynamic Table', () => {
         });
 
         it('[C286277] Should have a datepicker and a mask for DateTime field', () => {
-            dynamicTable.clickAddButton();
-            dynamicTable.clickColumnDateTime();
+            widget.dynamicTable().clickAddButton();
+            widget.dynamicTable().clickColumnDateTime();
 
-            expect(dynamicTable.addRandomStringOnDateTime(randomText.dateTime)).toBe('');
+            expect(widget.dynamicTable().addRandomStringOnDateTime(randomText.dateTime)).toBe('');
         });
 
         it('[C286279] Should be able to save row with Date field', () => {
-            dynamicTable.clickAddButton();
-            dynamicTable.addRandomStringOnDate(randomText.date);
-            dynamicTable.clickSaveButton();
+            widget.dynamicTable().clickAddButton();
+            widget.dynamicTable().addRandomStringOnDate(randomText.date);
+            widget.dynamicTable().clickSaveButton();
 
-            expect(dynamicTable.checkErrorMessage()).toBe(randomText.error);
+            expect(widget.dynamicTable().checkErrorMessage()).toBe(randomText.error);
 
-            dynamicTable.clickDateWidget();
+            widget.dynamicTable().clickDateWidget();
             datePicker.selectTodayDate()
                 .checkDatePickerIsNotDisplayed();
-            dynamicTable.clickSaveButton();
-            dynamicTable.getTableRow(rowPosition);
+            widget.dynamicTable().clickSaveButton();
+            widget.dynamicTable().getTableRow(rowPosition);
         });
     });
 
     describe('Required Dropdown', () => {
         const app = resources.Files.APP_DYNAMIC_TABLE_DROPDOWN;
-        const dropdown = new DropdownWidget();
+        const dropdown = widget.dropdown();
 
         beforeAll(async(done) => {
 
@@ -162,10 +160,10 @@ describe('Dynamic Table', () => {
 
         it('[C286519] Should be able to save row with required dropdown column', () => {
             const dropdownOption = 'Option 1';
-            dynamicTable.clickAddButton();
+            widget.dynamicTable().clickAddButton();
             dropdown.selectOption(dropdownOption);
-            dynamicTable.clickSaveButton();
-            dynamicTable.checkItemIsPresent(dropdownOption);
+            widget.dynamicTable().clickSaveButton();
+            widget.dynamicTable().checkItemIsPresent(dropdownOption);
         });
     });
 

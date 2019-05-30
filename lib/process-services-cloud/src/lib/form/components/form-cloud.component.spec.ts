@@ -121,7 +121,7 @@ describe('FormCloudComponent', () => {
     });
 
     it('should show [custom-outcome] button with readOnly form and selected custom-outcome', () => {
-        const formModel = new FormCloud({formRepresentation: {formDefinition: {selectedOutcome: 'custom-outcome'}}});
+        const formModel = new FormCloud({formRepresentation: {selectedOutcome: 'custom-outcome'}});
         formModel.readOnly = true;
         formComponent.form = formModel;
         let outcome = new FormOutcomeModel(<any> formModel, { id: '$customoutome', name: 'custom-outcome' });
@@ -211,7 +211,7 @@ describe('FormCloudComponent', () => {
     });
 
     it('should refresh visibility when the form is loaded', () => {
-        spyOn(formCloudService, 'getForm').and.returnValue(of({formRepresentation: {formDefinition: {}}}));
+        spyOn(formCloudService, 'getForm').and.returnValue(of({formRepresentation: {}}));
         const formId = '123';
         const appName = 'test-app';
 
@@ -389,7 +389,7 @@ describe('FormCloudComponent', () => {
 
         spyOn(formCloudService, 'getTask').and.returnValue(of({}));
         spyOn(formCloudService, 'getTaskVariables').and.returnValue(of({}));
-        spyOn(formCloudService, 'getTaskForm').and.returnValue(of({formRepresentation: {taskId: taskId, formDefinition: {selectedOutcome: 'custom-outcome'}}}));
+        spyOn(formCloudService, 'getTaskForm').and.returnValue(of({formRepresentation: {taskId: taskId, selectedOutcome: 'custom-outcome'}}));
 
         formComponent.formLoaded.subscribe(() => {
             expect(formCloudService.getTaskForm).toHaveBeenCalledWith(appName, taskId);
@@ -422,7 +422,7 @@ describe('FormCloudComponent', () => {
     it('should fetch and parse form definition by id', (done) => {
         spyOn(formCloudService, 'getForm').and.callFake((currentAppName, currentFormId) => {
             return new Observable((observer) => {
-                observer.next({ formRepresentation: {id: currentFormId, formDefinition: {}}});
+                observer.next({ formRepresentation: {id: currentFormId}});
                 observer.complete();
             });
         });
@@ -472,12 +472,10 @@ describe('FormCloudComponent', () => {
             formRepresentation: {
                 id: '23',
                 taskId: taskId,
-                formDefinition: {
-                    fields: [
-                        { id: 'field1' },
-                        { id: 'field2' }
-                    ]
-                }
+                fields: [
+                    { id: 'field1' },
+                    { id: 'field2' }
+                ]
             }
         });
         formComponent.form = formModel;
@@ -502,12 +500,10 @@ describe('FormCloudComponent', () => {
             formRepresentation: {
                 id: '23',
                 taskId: taskId,
-                formDefinition: {
-                    fields: [
-                        { id: 'field1' },
-                        { id: 'field2' }
-                    ]
-                }
+                fields: [
+                    { id: 'field1' },
+                    { id: 'field2' }
+                ]
             }
         });
         formComponent.form = formModel;
@@ -572,12 +568,10 @@ describe('FormCloudComponent', () => {
             formRepresentation: {
                 id: '23',
                 taskId: taskId,
-                formDefinition: {
-                    fields: [
-                        { id: 'field1' },
-                        { id: 'field2' }
-                    ]
-                }
+                fields: [
+                    { id: 'field1' },
+                    { id: 'field2' }
+                ]
             }
         });
 
@@ -598,11 +592,9 @@ describe('FormCloudComponent', () => {
         const form = formComponent.parseForm({
             formRepresentation: {
                 id: '1',
-                formDefinition: {
-                    fields: [
-                        { id: 'field1', type: FormFieldTypes.CONTAINER }
-                    ]
-                }
+                fields: [
+                    { id: 'field1', type: FormFieldTypes.CONTAINER }
+                ]
             }
         });
 
@@ -615,7 +607,7 @@ describe('FormCloudComponent', () => {
     it('should provide outcomes for form definition', () => {
         spyOn(formComponent, 'getFormDefinitionOutcomes').and.callThrough();
 
-        const form = formComponent.parseForm({ formRepresentation: { id: 1, formDefinition: {}}});
+        const form = formComponent.parseForm({ formRepresentation: { id: 1 }});
         expect(formComponent.getFormDefinitionOutcomes).toHaveBeenCalledWith(form);
     });
 
@@ -772,7 +764,7 @@ describe('FormCloudComponent', () => {
 });
 
 @Component({
-    selector: 'adf-form-cloud-with-custom-outcomes',
+    selector: 'adf-cloud-form-with-custom-outcomes',
     template: `
     <adf-cloud-form #adfCloudForm>
         <adf-cloud-form-custom-outcomes>

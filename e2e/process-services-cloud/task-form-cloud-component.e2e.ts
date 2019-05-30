@@ -80,17 +80,8 @@ describe('Task form cloud component ', () => {
             browser.params.config.identityHost);
         loginSSOPage.loginSSOIdentityService(browser.params.identityUser.email, browser.params.identityUser.password);
         done();
-    });
 
-    it('[C307032] Should display the appropriate title for the unclaim option of a Task', async () => {
-        navigationBarPage.navigateToProcessServicesCloudPage();
-        appListCloudComponent.checkApsContainer();
-        appListCloudComponent.goToApp(candidateuserapp);
-        tasksCloudDemoPage.myTasksFilter().clickTaskFilter();
-        tasksCloudDemoPage.taskListCloudComponent().checkContentIsDisplayedByName(assigneeTask.entry.name);
-        tasksCloudDemoPage.taskListCloudComponent().selectRow(assigneeTask.entry.name);
-        expect(taskDetailsCloudDemoPage.getReleaseButtonText()).toBe('RELEASE');
-    });
+    }, 5 * 60 * 1000);
 
     describe('Complete task - cloud directive', () => {
         beforeEach(() => {
@@ -168,7 +159,6 @@ describe('Task form cloud component ', () => {
         let toClaimTask, toReleaseTask, toClaimProcessTask, toClaimProcessWithCandidateUserTask, toReleaseAndClaimTask;
 
         beforeAll(async (done) => {
-
             toClaimTask = await tasksService.createStandaloneTask(StringUtil.generateRandomString(), candidateuserapp);
 
             toReleaseTask = await tasksService.createAndClaimTask(StringUtil.generateRandomString(), candidateuserapp);
@@ -197,11 +187,21 @@ describe('Task form cloud component ', () => {
             done();
         });
 
-        beforeEach((done) => {
+        beforeEach(() => {
             navigationBarPage.navigateToProcessServicesCloudPage();
             appListCloudComponent.checkApsContainer();
             appListCloudComponent.goToApp(candidateuserapp);
-            done();
+
+        });
+
+        it('[C307032] Should display the appropriate title for the unclaim option of a Task', async () => {
+            navigationBarPage.navigateToProcessServicesCloudPage();
+            appListCloudComponent.checkApsContainer();
+            appListCloudComponent.goToApp(candidateuserapp);
+            tasksCloudDemoPage.myTasksFilter().clickTaskFilter();
+            tasksCloudDemoPage.taskListCloudComponent().checkContentIsDisplayedByName(assigneeTask.entry.name);
+            tasksCloudDemoPage.taskListCloudComponent().selectRow(assigneeTask.entry.name);
+            expect(taskDetailsCloudDemoPage.getReleaseButtonText()).toBe('RELEASE');
         });
 
         it('[C306869] Should be able to Claim a standalone task', () => {
